@@ -300,8 +300,8 @@ FM.classPlayer = function(o){
     });
     
     var txtTitle = new Kinetic.Text({
-        x: -14,
-        y: 1,
+        x: -18,
+        y: 0,
         text: this.conf.title,
         alpha: 0.9,
         fontSize: 12,
@@ -390,8 +390,10 @@ FM.classPlayer = function(o){
 
     this.grp.fullMovement = function(e) {
         //Full Movement
-        FM.player.attrs.x = parseInt((FM.WIDTH/2-e.x/20*(-1)*FM.WIDTH));
-        FM.player.attrs.y = parseInt((FM.HEIGHT/2-(e.y-10)/6*FM.HEIGHT/2));
+        var xLimit = parseInt((FM.WIDTH/2-e.x/20*(-1)*FM.WIDTH)),
+            yLimit = parseInt((FM.HEIGHT/2-(e.y-10)/6*FM.HEIGHT/2));
+        FM.player.attrs.x = (xLimit>FM.WIDTH-5)?FM.WIDTH-6:((xLimit<5)?6:xLimit);
+        FM.player.attrs.y = (yLimit>FM.HEIGHT-5)?FM.HEIGHT-6:((yLimit<5)?6:yLimit);;
     };            
 
     this.grp.progressiveMovement = function(e) {
