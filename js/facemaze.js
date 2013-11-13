@@ -340,6 +340,7 @@ FM.classPlayer = function(o){
     this.grp.conf = this.conf;
     this.grp.mass = 4;
     this.grp.speed = 2;
+    this.grp.moveStrategy = "fullMovement";
     this.grp.direction = {x:1,y:1};
 
     this.grp.moveDown = function(playerSpeed) {
@@ -386,6 +387,36 @@ FM.classPlayer = function(o){
                 this.attrs.x--; 
        }
     };            
+
+    this.grp.fullMovement = function(e) {
+        //Full Movement
+        FM.player.attrs.x = parseInt((FM.WIDTH/2-e.x/20*(-1)*FM.WIDTH));
+        FM.player.attrs.y = parseInt((FM.HEIGHT/2-(e.y-10)/6*FM.HEIGHT/2));
+    };            
+
+    this.grp.progressiveMovement = function(e) {
+        //Progressive moment
+        var yLimit = (e.y-10)*-1,
+            xLimit = e.x/20*4;
+
+        FM.player.direction.x = (xLimit<-0.9)?-1.5:(xLimit>0.9)?1.5:(xLimit<0.5||xLimit>0.5)?0:xLimit;
+        FM.player.direction.y =(yLimit<-1.5)?-1.5:(yLimit>1.5)?1.5:(yLimit<0.2||yLimit>0.2)?0:yLimit;
+        FM.player.move();
+    };            
+
+    this.grp.radiusMovement = function(e) {
+        var yLimit = (e.y-10)*-1,
+            xLimit = e.x/20*4;
+
+        FM.player.direction.x = (xLimit<-0.9)?-1.5:(xLimit>0.9)?1.5:(xLimit<0.5||xLimit>0.5)?0:xLimit;
+        FM.player.direction.y =(yLimit<-1.5)?-1.5:(yLimit>1.5)?1.5:(yLimit<0.2||yLimit>0.2)?0:yLimit;
+        FM.player.move();
+        
+        //Change radious
+        var rad = 50*(100-parseInt(e.z))/100;
+        FM.player.children[0].attrs.radius = (rad<10)?10:rad;
+    };            
+
 
     return this.grp;
 }
@@ -701,14 +732,22 @@ document.addEventListener('headtrackingEvent',  function(e){
     FM.player.attrs.y = parseInt((FM.HEIGHT/2-(e.y-10)/6*FM.HEIGHT/2));
     */
     //Progressive moment
+    /*
     var yLimit = (e.y-10)*-1,
         xLimit = e.x/20*4;
 
     FM.player.direction.x = (xLimit<-0.9)?-1.5:(xLimit>0.9)?1.5:(xLimit<0.5||xLimit>0.5)?0:xLimit;
     FM.player.direction.y =(yLimit<-1.5)?-1.5:(yLimit>1.5)?1.5:(yLimit<0.2||yLimit>0.2)?0:yLimit;
     FM.player.move();
+    
+    //Change radious
+    var rad = 50*(100-parseInt(e.z))/100;
+    FM.player.children[0].attrs.radius = (rad<10)?10:rad;
+    */
+    FM.player[FM.player.moveStrategy](e);
+
     if(FM.debugMove){
-        console.log(FM.player.attrs, e.x, xLimit,  e.y, e.y-10); FM.debugMove=false;
+        console.log(FM.player.attrs, e.x, xLimit,  e.y, e.y-10, e.z); FM.debugMove=false;
     }
 });
 
