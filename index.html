@@ -39,9 +39,9 @@
 					<div class="panel">
 						<p>Try different kinds of movements:</p>
                         <ul>
-                            <li><a href="javascript:FM.player.moveStrategy = 'fullMovement'">Full Movement</a></li>
-                            <li><a href="javascript:FM.player.moveStrategy = 'progressiveMovement'">Progressive Movement</a></li>
-                            <li><a href="javascript:FM.player.moveStrategy = 'radiusMovement'">Radius Movement</a></li>
+                            <li><a href="#fullMovement" class="changeMove">Full Movement</a></li>
+                            <li><a href="#progressiveMovement" class="changeMove">Progressive Movement</a></li>
+                            <li><a href="#radiusMovement" class="changeMove">Radius Movement</a></li>
                         </ul>
 					</div>
 				</div>
@@ -113,6 +113,12 @@
   <script src="./js/facemaze.js"></script>
   <script>
     //$(document).foundation();
+    $(document).ready(function(){
+        $(".changeMove").click(function(e){
+           e.preventDefault(); e.stopPropagation();
+           FM.player.moveStrategy = $(this).attr("href").replace("#","");
+        });    
+    });
   </script>
     <!-- GA -->
     <script type="text/javascript"> 
