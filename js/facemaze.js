@@ -10,7 +10,7 @@
 * @requires KineticJS v3.9.4 - http://www.kineticjs.com/
 * 
 */
-superGlobal = 1;
+superGlobal = "@";
 
 /**
  * FMRenderer Global Namespace
@@ -98,6 +98,7 @@ FM.HEIGHT = "";
 FM.RAD = 15;
 FM.classes = [];
 FM.relations = [];
+FM.debugMove = false;
 
 /**
 * Global Gradient / Shadows Objects Mixin
@@ -246,7 +247,7 @@ FM.init = function(o){
     //Draw the Game Layer
     FM.gameLayer  = new Kinetic.Layer({x:0});
     // Add the player
-    FM.player  = new FM.classPlayer({name:superGlobal,title:superGlobal,x:superGlobal*10, y:superGlobal*10});
+    FM.player  = new FM.classPlayer({name:superGlobal,title:superGlobal,x:200, y:200});
     FM.gameLayer.add(FM.player);
 
     // Add the oponents
@@ -275,8 +276,8 @@ FM.classPlayer = function(o){
     this.conf = {
         name: "class-name",
         title: "Name",
-        x:0,
-        y:0,
+        x:200,
+        y:200,
         rectX: 0,
         rectY: 0,
         width: 150,
@@ -338,7 +339,7 @@ FM.classPlayer = function(o){
     this.grp.add(txtTitle);
     this.grp.conf = this.conf;
     this.grp.mass = 4;
-    this.grp.speed = 4;
+    this.grp.speed = 2;
     this.grp.direction = {x:1,y:1};
 
     this.grp.moveDown = function(playerSpeed) {
@@ -365,6 +366,27 @@ FM.classPlayer = function(o){
         };
     };            
 
+    this.grp.move = function() {
+
+       if(this.attrs.y>=5 && this.attrs.y <= FM.HEIGHT-5){
+           this.attrs.y += this.speed * this.direction.y;
+       }else{
+           if(this.attrs.y<=5)
+                this.attrs.y++; 
+           if(this.attrs.y >= FM.HEIGHT-5)
+                this.attrs.y--; 
+       }
+           
+       if(this.attrs.x>=5 && this.attrs.x <= FM.WIDTH-5){
+           this.attrs.x += this.speed * this.direction.x;
+       }else{
+           if(this.attrs.x<=5)
+                this.attrs.x++; 
+           if(this.attrs.x >= FM.WIDTH-5)
+                this.attrs.x--; 
+       }
+    };            
+
     return this.grp;
 }
 
@@ -383,7 +405,7 @@ FM.classBall = function(o){
     
     FM.override(this.conf, o || {});
 
-	var rectX = this.conf.rectX, rectY = this.conf.rectY;
+    var rectX = this.conf.rectX, rectY = this.conf.rectY;
 		
     this.grp = new Kinetic.Group({
         //x: rectX,
@@ -673,8 +695,21 @@ htracker.init(videoInput, canvasInput);
 htracker.start();
 
 document.addEventListener('headtrackingEvent',  function(e){
-        FM.player.attrs.x = parseInt((FM.WIDTH/2-e.x/20*(-1)*FM.WIDTH));
-            FM.player.attrs.y = parseInt((FM.HEIGHT/2-(e.y-10)/6*FM.HEIGHT/2));
+    //Full Movement
+    /*
+    FM.player.attrs.x = parseInt((FM.WIDTH/2-e.x/20*(-1)*FM.WIDTH));
+    FM.player.attrs.y = parseInt((FM.HEIGHT/2-(e.y-10)/6*FM.HEIGHT/2));
+    */
+    //Progressive moment
+    var yLimit = (e.y-10)*-1,
+        xLimit = e.x/20*4;
+
+    FM.player.direction.x = (xLimit<-0.9)?-1.5:(xLimit>0.9)?1.5:(xLimit<0.5||xLimit>0.5)?0:xLimit;
+    FM.player.direction.y =(yLimit<-1.5)?-1.5:(yLimit>1.5)?1.5:(yLimit<0.2||yLimit>0.2)?0:yLimit;
+    FM.player.move();
+    if(FM.debugMove){
+        console.log(FM.player.attrs, e.x, xLimit,  e.y, e.y-10); FM.debugMove=false;
+    }
 });
 
 
