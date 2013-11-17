@@ -392,8 +392,23 @@ FM.classPlayer = function(o){
         //Full Movement
         var xLimit = parseInt((FM.WIDTH/2-e.x/20*(-1)*FM.WIDTH)),
             yLimit = parseInt((FM.HEIGHT/2-(e.y-10)/6*FM.HEIGHT/2));
-        FM.player.attrs.x = (xLimit>FM.WIDTH-5)?FM.WIDTH-6:((xLimit<5)?6:xLimit);
-        FM.player.attrs.y = (yLimit>FM.HEIGHT-5)?FM.HEIGHT-6:((yLimit<5)?6:yLimit);;
+            colDist = FM.collidingCirclesDist(FM.player.attrs,FM.ball.attrs,FM.RAD);
+        console.log(colDist);
+        if(colDist>=0){
+            FM.player.attrs.x = (xLimit>FM.WIDTH-5)?FM.WIDTH-6:((xLimit<5)?6:xLimit);
+            FM.player.attrs.y = (yLimit>FM.HEIGHT-5)?FM.HEIGHT-6:((yLimit<5)?6:yLimit);;
+        }else{
+            var a =FM.ball.attrs.x-e.x, b=FM.ball.attrs.y-e.y,angle = Math.atan(a/b),
+                h = 35, op = h*Math.sin(angle), ad = h*Math.cos(angle);
+
+            xLimit = FM.ball.attrs.x+op;
+            yLimit = FM.ball.attrs.y+ad;
+            console.log(FM.player.attrs.y, yLimit);
+            console.log(FM.player.attrs.x, xLimit);
+
+            FM.player.attrs.x = (xLimit>FM.WIDTH-5)?FM.WIDTH-6:((xLimit<5)?6:xLimit);
+            FM.player.attrs.y = (yLimit>FM.HEIGHT-5)?FM.HEIGHT-6:((yLimit<5)?6:yLimit);;
+        }
     };            
 
     this.grp.progressiveMovement = function(e) {
