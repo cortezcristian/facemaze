@@ -398,7 +398,7 @@ FM.classPlayer = function(o){
                 //
             } else {
                 var a = xLimit-FM.ball.attrs.x, b = yLimit-FM.ball.attrs.y, angle = Math.atan(Math.abs(a)/Math.abs(b)),
-                    h = 31, op = h*Math.cos(angle)*(b/Math.abs(b)), ad = h*Math.sin(angle)*(a/Math.abs(a));
+                    h = 35, op = h*Math.cos(angle)*(b/Math.abs(b)), ad = h*Math.sin(angle)*(a/Math.abs(a));
 
                 xBallLimit = xLimit-ad;
                 yBallLimit = yLimit-op;
@@ -494,7 +494,7 @@ FM.classBall = function(o){
            this.direction.y *= -1;
            //try <
            //FM.ball.attrs.x = (data.x>FM.WIDTH)?FM.WIDTH:((data.x<0)?0:data.x);
-           this.y = (this.y>=FM.HEIGHT)?FM.HEIGHT:0;
+           this.attrs.y = (this.attrs.y>=FM.HEIGHT-FM.RAD)?FM.HEIGHT-FM.RAD:((this.attrs.y<=FM.RAD)?FM.RAD:this.attrs.y);
            this.collidedWithWallY = 1;     
        }else{
            this.collidedWithWallY = 0;     
@@ -503,7 +503,7 @@ FM.classBall = function(o){
        //Collision with walls
        if((this.attrs.x<=FM.RAD || this.attrs.x >= FM.WIDTH-FM.RAD)&&!this.collidedWithWallY){
            this.direction.x *= -1;
-           this.x = (this.x>=FM.WIDTH)?FM.WIDTH:0;
+           this.attrs.x = (this.attrs.x >= FM.WIDTH-FM.RAD)?FM.WIDTH-FM.RAD:((this.attrs.x<=FM.RAD)?FM.RAD:this.attrs.x);
            this.collidedWithWallX = 1;     
        }else{
            this.collidedWithWallX = 0;     
