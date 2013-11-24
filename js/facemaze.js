@@ -393,22 +393,23 @@ FM.classPlayer = function(o){
         var xLimit = parseInt((FM.WIDTH/2-e.x/20*(-1)*FM.WIDTH)),
             yLimit = parseInt((FM.HEIGHT/2-(e.y-10)/6*FM.HEIGHT/2));
             colDist = FM.collidingCirclesDist(FM.player.attrs,FM.ball.attrs,FM.RAD);
-        console.log(colDist);
-        if(colDist>=0){
+            
+            if(colDist>0){
+                //
+            } else {
+                var a = xLimit-FM.ball.attrs.x, b = yLimit-FM.ball.attrs.y, angle = Math.atan(Math.abs(a)/Math.abs(b)),
+                    h = 31, op = h*Math.cos(angle)*(b/Math.abs(b)), ad = h*Math.sin(angle)*(a/Math.abs(a));
+
+                xBallLimit = xLimit-ad;
+                yBallLimit = yLimit-op;
+                console.log("Ball(x,y): ("+FM.ball.attrs.x+","+FM.ball.attrs.y+")", "NewBall(x,y): ("+xBallLimit+","+yBallLimit+")", "Player(x,y): ("+FM.player.attrs.x+","+FM.player.attrs.y+")", "Head(x,y): ("+xLimit+","+yLimit+")", "ad/op"+ad+"/"+op);
+                FM.ball.attrs.x = xBallLimit;
+                FM.ball.attrs.y = yBallLimit;
+                //FM.ball.attrs.x = (xBallLimit>FM.WIDTH-5)?FM.WIDTH-6:((xBallLimit<5)?6:xBallLimit);
+                //FM.ball.attrs.y = (yBallLimit>FM.HEIGHT-5)?FM.HEIGHT-6:((yBallLimit<5)?6:yBallLimit);;
+            }
             FM.player.attrs.x = (xLimit>FM.WIDTH-5)?FM.WIDTH-6:((xLimit<5)?6:xLimit);
             FM.player.attrs.y = (yLimit>FM.HEIGHT-5)?FM.HEIGHT-6:((yLimit<5)?6:yLimit);;
-        }else{
-            var a =FM.ball.attrs.x-e.x, b=FM.ball.attrs.y-e.y,angle = Math.atan(a/b),
-                h = 35, op = h*Math.sin(angle), ad = h*Math.cos(angle);
-
-            xLimit = FM.ball.attrs.x+op;
-            yLimit = FM.ball.attrs.y+ad;
-            console.log(FM.player.attrs.y, yLimit);
-            console.log(FM.player.attrs.x, xLimit);
-
-            FM.player.attrs.x = (xLimit>FM.WIDTH-5)?FM.WIDTH-6:((xLimit<5)?6:xLimit);
-            FM.player.attrs.y = (yLimit>FM.HEIGHT-5)?FM.HEIGHT-6:((yLimit<5)?6:yLimit);;
-        }
     };            
 
     this.grp.progressiveMovement = function(e) {
@@ -489,7 +490,7 @@ FM.classBall = function(o){
     this.grp.move = function() {
 
        //Collision with walls
-       if((this.attrs.y<=0 || this.attrs.y >= FM.HEIGHT)&&!this.collidedWithWallY){
+       if((this.attrs.y<=FM.RAD || this.attrs.y >= FM.HEIGHT-FM.RAD)&&!this.collidedWithWallY){
            this.direction.y *= -1;
            //try <
            //FM.ball.attrs.x = (data.x>FM.WIDTH)?FM.WIDTH:((data.x<0)?0:data.x);
@@ -500,7 +501,7 @@ FM.classBall = function(o){
        }
 
        //Collision with walls
-       if((this.attrs.x<=0 || this.attrs.x >= FM.WIDTH)&&!this.collidedWithWallY){
+       if((this.attrs.x<=FM.RAD || this.attrs.x >= FM.WIDTH-FM.RAD)&&!this.collidedWithWallY){
            this.direction.x *= -1;
            this.x = (this.x>=FM.WIDTH)?FM.WIDTH:0;
            this.collidedWithWallX = 1;     
@@ -522,6 +523,7 @@ FM.classBall = function(o){
        }else{
            this.collidedWithPlayer = 0;
        }
+       /*
        var grp = this; 
        //Collide with other players
        $.each(FM.oponents, function(i,v){
@@ -542,7 +544,7 @@ FM.classBall = function(o){
                grp.collidedWithOp[v.name] = 0;
            }
        });
-
+        */
        this.attrs.y += this.speed * this.direction.y;
        this.attrs.x += this.speed * this.direction.x;
     }
